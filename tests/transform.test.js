@@ -10,7 +10,7 @@ const { execSync } = require('child_process');
 
 const getTransform = (input, operations) => {
   const path = "/transform?" + Qs.stringify({ input, operations: JSON.stringify(operations) });
-
+  console.log(path)
   return (
     request(app)
       .get(path)
@@ -58,6 +58,18 @@ describe('Transform Endpoint', () => {
 
     expect(stream.width).toEqual(320)
     expect(stream.height).toEqual(240)
+  });
+
+  it('shouldn\'t crash', async () => {
+    const res = await getTransform(
+      'https://wrong_url/',
+      [
+        { name: "format", params: ['flv'] },
+        { name: "size", params: [320, 240] },
+      ]
+    )
+
+    expect(res.statusCode).toEqual(200)
   });
 })
 

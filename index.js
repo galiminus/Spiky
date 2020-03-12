@@ -18,8 +18,9 @@ const AUTHORIZED_OPERATIONS = [
 ];
 
 const app = Express()
-  .get('/transform', ({ query: { input, operations = '[{ "name": "format", "params": ["mp4"] }]' }}, res) => {
-    let pipeline = new StreamTranscoder({ source: input });
+  .get('/transform', ({ query: { input, operations = '[{ "name": "format", "params": ["mp4"] }]' }}, res, next) => {
+    let pipeline = new StreamTranscoder({ source: input })
+      .on('error', (error) => { next(new Error(error)) })
 
     for ({ name, params } of JSON.parse(operations))
       if (AUTHORIZED_OPERATIONS.indexOf(name) >= 0) {
